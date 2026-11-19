@@ -1,0 +1,27 @@
+const DIFF=[
+  {name:'RECLUTA',dmg:.55,acc:1.7,rate:.75,speed:.9,count:.8},
+  {name:'SOLDADO',dmg:1,acc:1,rate:1,speed:1,count:1},
+  {name:'VETERANO',dmg:1.45,acc:.72,rate:1.25,speed:1.08,count:1.2},
+  {name:'REALISTA',dmg:2.0,acc:.5,rate:1.5,speed:1.15,count:1.4}
+];
+function waveComposition(w){
+  const total=Math.round((4+w*2)*DIFF[S.diff].count);
+  const list=[];
+  for(let i=0;i<total;i++){
+    let t='rifle';
+    const r=Math.random();
+    if(w>=2&&r<.26)t='rush';
+    if(w>=3&&r>.78)t='marks';
+    if(w>=5&&r>.93)t='heavy';
+    list.push(t);
+  }
+  if(w>=5&&w%3===2)list.push('heavy');
+  if(w>=8)list.push('heavy');
+  return list;
+}
+TEX.blood=spriteTex(128,(x,s)=>{x.clearRect(0,0,s,s);
+  for(let i=0;i<26;i++){const a=rnd(TAU),d=Math.pow(Math.random(),1.7)*s*.44;
+    x.fillStyle=`rgba(${90+rnd(50)|0},${8+rnd(12)|0},${6+rnd(8)|0},${rnd(.85,.35).toFixed(2)})`;
+    x.beginPath();x.ellipse(s/2+Math.cos(a)*d,s/2+Math.sin(a)*d,rnd(13,3),rnd(11,3),rnd(TAU),0,TAU);x.fill();}
+});
+TEX.scorch=null;
