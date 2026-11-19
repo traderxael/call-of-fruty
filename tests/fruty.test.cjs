@@ -270,7 +270,7 @@ function intermissionKeyboard() {
 }
 
 for (const code of ['Enter','Space']) test(`intermission summary keeps native ${code} without starting a wave`,()=>{
-  const summary={closest:selector=>selector==='summary'?summary:null};
+  const summary={closest:selector=>selector.split(',').some(s=>s.trim()==='summary')?summary:null};
   for (const target of [summary,{closest:selector=>summary.closest(selector)}]) {
     const keyboard=intermissionKeyboard();
     assert.equal(keyboard.press(code,target),false);
@@ -286,7 +286,7 @@ test('intermission window and action shortcuts remain available',()=>{
     keyboard.press(code,target);
     assert.equal(keyboard.G.wave,7);assert.equal(keyboard.G.state,'playing');
   }
-  const keyboard=intermissionKeyboard(),summary={closest:()=>summary};
+  const keyboard=intermissionKeyboard(),summary={closest:selector=>selector.split(',').some(s=>s.trim()==='summary')?summary:null};
   for (const code of ['Digit1','Digit2','Digit3']) keyboard.press(code,summary);
   assert.deepEqual(keyboard.chosen,['mag','dmg','armor']);
 });
@@ -464,7 +464,8 @@ function combatHarness(extra=[]) {
   const model=()=>({group:{visible:true},muzzle:{getWorldPosition:v=>v.set(0,1,0)},
     flash:{material:{opacity:0},rotation:{},scale:{setScalar(){}}},flashLight:{intensity:0}});
   const globals={THREE:{Vector3:FXVector,Color:FXColor},G:{state:'playing',wave:10,time:0,upg:{},stats:{shots:0,hits:0,dmgTaken:0,dmgDealt:0}},
-    VM:{models:{ar:model(),smg:model(),dmr:model()},cur:null},S:{diff:1},mouse:{fire:false,ads:false},
+    VM:{models:{ar:model(),smg:model(),dmr:model()},cur:null},S:{diff:1},mouse:{dx:0,dy:0,fire:false,ads:false},
+    keys:{},pointerRequestPending:false,pointerRequestId:0,$$:()=>Array.from(nodes.values()),
     clamp,lerp,Math:fxRandom,rnd:fxRnd,D2R:Math.PI/180,TAU:Math.PI*2,q:{particles:1},
     camera:{quaternion:{},matrixWorld:{},getWorldPosition:v=>v.set(0,1,0)},
     _org:new FXVector(),_dir:new FXVector(0,0,-1),_right:new FXVector(),_fwd:new FXVector(),_hitP:new FXVector(),
@@ -473,7 +474,7 @@ function combatHarness(extra=[]) {
     toast(){},trauma:0,$,document:{createElement:node},innerWidth:1000,innerHeight:700,
     gradePass:{uniforms:{uDamage:{value:0}}},showDamageDir(){},killPlayer(){globals.G.state='dead';},
     lockPointer(){},startWave:w=>{globals.G.wave=w;},scene:{remove(){}}};
-  const loaded=load([...accuracyNames,'player','currentWeapon','switchWeapon','startReload','finishReload','resetPlayer','aimDir',...extra],globals);
+  const loaded=load([...accuracyNames,'player','touchState','resetInput','currentWeapon','switchWeapon','startReload','finishReload','resetPlayer','aimDir',...extra],globals);
   loaded.run('VM.cur=VM.models.ar; resetPlayer(true)');
   return {...loaded,globals,nodes,numbers,player:loaded.run('player'),weapons:loaded.run('WEAPONS')};
 }
